@@ -4,30 +4,22 @@ using UnityEngine;
 
 public class FlowFieldGrid : MonoBehaviour {
 
-    private int gridSizeX;
-    private int gridSizeY;
-    private FlowFieldTile target;
-    private List<Vector2Int> walls;
+    public int gridSizeX;
+    public int gridSizeY;
+    public FlowFieldTile target;
+    public List<Vector2Int> walls;
+    private FlowFieldTile[,] weightArray;
 
 
     // Start is called before the first frame update
     public FlowFieldGrid() {
-        this.gridSizeX = 20;
-        this.gridSizeY = 20;
+        this.gridSizeX = 10;
+        this.gridSizeY = 10;
         //GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
-        this.target = new FlowFieldTile(5, 5);
+        this.target = new FlowFieldTile(5, 3);
         this.walls = new List<Vector2Int>();
-        this.walls.Add(new Vector2Int(3,6));
-        FlowFieldTile[,] arr = generateDijkstraGrid(this.gridSizeX, this.gridSizeY, this.walls);
-
-
-        for (int x = 0; x < gridSizeX; x++) {
-            for (int y = 0; y < gridSizeY; y++) {
-                Debug.Log(arr[x, y].getWeight());
-            }
-        }
-        
-
+        this.walls.Add(new Vector2Int(2,4));
+        this.weightArray = generateDijkstraGrid(this.gridSizeX, this.gridSizeY, this.walls);
     }
 
 
@@ -41,9 +33,9 @@ public class FlowFieldGrid : MonoBehaviour {
             }
         }
 
-        //Set all places where obstacles are as being weight MAXINT, which will stand for not able to go here
+        //Set all places where obstacles are as being weight MaxValue, which will stand for not able to go here
         foreach (Vector2Int element in walls){
-            dijkstraGrid[element.x, element.y].setIsBlocked();//Number.MAX_VALUE;
+            dijkstraGrid[element.x, element.y].setWeight(int.MaxValue);
         }
 
         //flood fill out from the end point
@@ -54,16 +46,19 @@ public class FlowFieldGrid : MonoBehaviour {
         List<FlowFieldTile> toVisit = new List<FlowFieldTile>();
         toVisit.Add(destination);//check this maybe!!!
 
+
         //for each node we need to visit, starting with the pathEnd
-        foreach (FlowFieldTile node in toVisit.ToArray()) {//fuck me
-            List<FlowFieldTile> neighbours = straightNeighboursOf(node);
+        //foreach (FlowFieldTile node in toVisit.ToArray()) {//fuck me
+        for(int i =0; i<toVisit.Count; i++) {
+
+            List<FlowFieldTile> neighbours = straightNeighboursOf(toVisit[i]);
 
             //for each neighbour of this node (only straight line neighbours, not diagonals)
             foreach (FlowFieldTile neighbour in neighbours) {
 
                 //We will only ever visit every node once as we are always visiting nodes in the most efficient order
                 if (dijkstraGrid[neighbour.getVector2d().x, neighbour.getVector2d().y].getWeight()==-1) {//if tile has not been visited
-                    neighbour.setWeight(node.getWeight() + 1);
+                    neighbour.setWeight(toVisit[i].getWeight() + 1);
                     dijkstraGrid[neighbour.getVector2d().x, neighbour.getVector2d().y].setWeight(neighbour.getWeight());
                     toVisit.Add(neighbour);
                 }
