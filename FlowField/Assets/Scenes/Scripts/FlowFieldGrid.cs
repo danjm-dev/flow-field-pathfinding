@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlowFieldGrid {
+public class FlowFieldGrid : MonoBehaviour {
 
     private int gridSizeX;
     private int gridSizeY;
     private FlowFieldTile target;
-
-
-    //private int[] arrr = new int[7];
-
-
+    private List<Vector2Int> walls;
 
 
     // Start is called before the first frame update
@@ -20,25 +16,19 @@ public class FlowFieldGrid {
         this.gridSizeY = 20;
         //GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
         this.target = new FlowFieldTile(5, 5);
-        FlowFieldTile[,] arr = generateDijkstraGrid(gridSizeX, gridSizeY, new List<Vector2Int>());
+        this.walls = new List<Vector2Int>();
+        this.walls.Add(new Vector2Int(3,6));
+        FlowFieldTile[,] arr = generateDijkstraGrid(this.gridSizeX, this.gridSizeY, this.walls);
 
 
         for (int x = 0; x < gridSizeX; x++) {
             for (int y = 0; y < gridSizeY; y++) {
-                Debug.Log(arr[x, y]);
+                Debug.Log(arr[x, y].getWeight());
             }
         }
         
 
     }
-
-
-
-
-
-
-
-
 
 
 
@@ -65,7 +55,7 @@ public class FlowFieldGrid {
         toVisit.Add(destination);//check this maybe!!!
 
         //for each node we need to visit, starting with the pathEnd
-        foreach (FlowFieldTile node in toVisit) {
+        foreach (FlowFieldTile node in toVisit.ToArray()) {//fuck me
             List<FlowFieldTile> neighbours = straightNeighboursOf(node);
 
             //for each neighbour of this node (only straight line neighbours, not diagonals)

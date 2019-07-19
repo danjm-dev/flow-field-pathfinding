@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlowFieldTile : MonoBehaviour
-{
+public class FlowFieldTile {
+
     private bool isBlocked;
     private Vector2Int gridPos;
     private int weight;
