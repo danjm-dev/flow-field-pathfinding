@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlowFieldGrid : MonoBehaviour {
+public class FlowFieldGrid {
 
-    public int gridSizeX;
-    public int gridSizeY;
-    public Vector2 destination;
+    private int gridSizeX;
+    private int gridSizeY;
+    private FlowFieldTile target;
 
 
     //private int[] arrr = new int[7];
@@ -15,14 +15,21 @@ public class FlowFieldGrid : MonoBehaviour {
 
 
     // Start is called before the first frame update
-    void Start() {
-        GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+    public FlowFieldGrid() {
+        this.gridSizeX = 20;
+        this.gridSizeY = 20;
+        //GameObject plane = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        this.target = new FlowFieldTile(5, 5);
+        FlowFieldTile[,] arr = generateDijkstraGrid(gridSizeX, gridSizeY, new List<Vector2Int>());
 
-    }
 
-    // Update is called once per frame
-    void Update() {
+        for (int x = 0; x < gridSizeX; x++) {
+            for (int y = 0; y < gridSizeY; y++) {
+                Debug.Log(arr[x, y]);
+            }
+        }
         
+
     }
 
 
@@ -33,12 +40,14 @@ public class FlowFieldGrid : MonoBehaviour {
 
 
 
-    private void generateDijkstraGrid(int gridWidth, int gridHeight, ArrayList walls) {
-        //Generate an empty grid, set all places as weight null, which will stand for unvisited
+
+
+    private FlowFieldTile[,] generateDijkstraGrid(int gridWidth, int gridHeight, List<Vector2Int> walls/*ArrayList of vector2dInt*/) {
+        //Generate an empty grid, set all places as weight -1, which will stand for unvisited
         FlowFieldTile[,] dijkstraGrid = new FlowFieldTile[gridWidth, gridHeight];
         for (int x = 0; x < gridWidth; x++) {
             for (int y = 0; y < gridHeight; y++) {
-                dijkstraGrid[x,y] = new FlowFieldTile();//weight null
+                dijkstraGrid[x,y] = new FlowFieldTile(x, y);
             }
         }
 
@@ -48,28 +57,50 @@ public class FlowFieldGrid : MonoBehaviour {
         }
 
         //flood fill out from the end point
-        var pathEnd = destination.round();
-        pathEnd.distance = 0;
-        dijkstraGrid[pathEnd.x][pathEnd.y] = 0;
+        FlowFieldTile destination = this.target;
+        destination.setWeight(0);
+        dijkstraGrid[destination.getVector2d().x, destination.getVector2d().y].setWeight(0);
 
-        var toVisit = [pathEnd];
+        List<FlowFieldTile> toVisit = new List<FlowFieldTile>();
+        toVisit.Add(destination);//check this maybe!!!
 
         //for each node we need to visit, starting with the pathEnd
-        for (i = 0; i < toVisit.length; i++) {
-            var neighbours = straightNeighboursOf(toVisit[i]);
+        foreach (FlowFieldTile node in toVisit) {
+            List<FlowFieldTile> neighbours = straightNeighboursOf(node);
 
             //for each neighbour of this node (only straight line neighbours, not diagonals)
-            for (var j = 0; j < neighbours.length; j++) {
-                var n = neighbours[j];
+            foreach (FlowFieldTile neighbour in neighbours) {
 
                 //We will only ever visit every node once as we are always visiting nodes in the most efficient order
-                if (dijkstraGrid[n.x][n.y] === null) {
-                    n.distance = toVisit[i].distance + 1;
-                    dijkstraGrid[n.x][n.y] = n.distance;
-                    toVisit.push(n);
+                if (dijkstraGrid[neighbour.getVector2d().x, neighbour.getVector2d().y].getWeight()==-1) {//if tile has not been visited
+                    neighbour.setWeight(node.getWeight() + 1);
+                    dijkstraGrid[neighbour.getVector2d().x, neighbour.getVector2d().y].setWeight(neighbour.getWeight());
+                    toVisit.Add(neighbour);
                 }
             }
         }
+        return dijkstraGrid;
+    }
+
+
+
+    private List<FlowFieldTile> straightNeighboursOf(FlowFieldTile tile) {
+        List<FlowFieldTile> neighbours = new List<FlowFieldTile>();
+        if (tile.getVector2d().x > 0) {
+            neighbours.Add(new FlowFieldTile(tile.getVector2d().x - 1, tile.getVector2d().y));
+        }
+        if (tile.getVector2d().y > 0) {
+            neighbours.Add(new FlowFieldTile(tile.getVector2d().x, tile.getVector2d().y - 1));
+        }
+
+        if (tile.getVector2d().x < gridSizeX - 1) {
+            neighbours.Add(new FlowFieldTile(tile.getVector2d().x + 1, tile.getVector2d().y));
+        }
+        if (tile.getVector2d().y < gridSizeY - 1) {
+            neighbours.Add(new FlowFieldTile(tile.getVector2d().x, tile.getVector2d().y + 1));
+        }
+
+        return neighbours;
     }
 
 
