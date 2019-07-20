@@ -4,13 +4,13 @@ using UnityEngine;
 
 public static class FlowFieldGrid {
 
-    public static Vector2[,] generateFlowField(int gridSizeX, int gridSizeY, DijkstraTile[,] dijkstraGrid) {
+    public static Vector2Int[,] generateFlowField(int gridSizeX, int gridSizeY, DijkstraTile[,] dijkstraGrid) {
 
         //Generate an empty grid, set all places as Vector2.zero, which will stand for no good direction
-        Vector2[,] flowField = new Vector2[gridSizeX, gridSizeY];
+        Vector2Int[,] flowField = new Vector2Int[gridSizeX, gridSizeY];
         for (int x = 0; x < gridSizeX; x++) {
             for (int y = 0; y < gridSizeY; y++) {
-                flowField[x, y] = Vector2.zero;//may need to construct dynamic vector
+                flowField[x, y] = Vector2Int.zero;//may need to construct dynamic vector
             }
         }
 
@@ -19,29 +19,30 @@ public static class FlowFieldGrid {
             for (int y = 0; y < gridSizeY; y++) {
 
                 //skip current iteration if index has obsticle
-                if (dijkstraGrid[x,y].getWeight() == int.MaxValue) {
-                    continue;
-                }
+                if (dijkstraGrid[x, y].getWeight() != int.MaxValue) {
 
-                Vector2Int pos = new Vector2Int(x, y);
-                List<Vector2Int> neighbours = allNeighboursOf(pos, gridSizeX, gridSizeY);
+                    Vector2Int pos = new Vector2Int(x, y);
+                    List<Vector2Int> neighbours = allNeighboursOf(pos, gridSizeX, gridSizeY);
 
-                //Go through all neighbours and find the one with the lowest distance
-                Vector2Int min = Vector2Int.zero;//this may be incorrect
-                float minDist = 0;
-                for (int i = 0; i < neighbours.Count; i++) {
-                    Vector2Int n = neighbours[i];
-                    float dist = Vector2Int.Distance(dijkstraGrid[n.x, n.y].getVector2d(), dijkstraGrid[pos.x, pos.y].getVector2d());
-
-                    if (dist < minDist) {
-                        min = n;
-                        minDist = dist;
+                    //Go through all neighbours and find the one with the lowest distance
+                    Vector2Int min = Vector2Int.zero;//this may be incorrect
+                    bool minNotNull = false;
+                    int minDist = 0;
+                    for (int i = 0; i < neighbours.Count; i++) {
+                        Vector2Int n = neighbours[i];
+                        int dist = dijkstraGrid[n.x, n.y].getWeight() - dijkstraGrid[pos.x, pos.y].getWeight();
+                        Debug.Log(dist);
+                        if (dist < minDist) {
+                            min = n;
+                            minNotNull = true;
+                            minDist = dist;
+                        }
                     }
-                }
 
-                //If we found a valid neighbour, point in its direction
-                if (min != Vector2Int.zero) {//potential problem
-                    flowField[x,y] = min - pos;
+                    //If we found a valid neighbour, point in its direction
+                    if (minNotNull) {//potential problem
+                        flowField[x, y] = min - pos;
+                    }
                 }
             }
         }
