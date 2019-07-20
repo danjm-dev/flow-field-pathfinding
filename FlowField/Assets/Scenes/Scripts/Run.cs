@@ -4,18 +4,16 @@ using UnityEngine;
 
 public class Run : MonoBehaviour
 {
-    private int gridSizeX = 5;
-    private int gridSizeY = 10;
+    private Vector2Int gridSize = new Vector2Int(5,10);
     // Start is called before the first frame update
     void Start() {
-        DijkstraTile[,] dijkstraGrid = DijkstraGrid.generateDijkstraGrid(gridSizeX, gridSizeY, getTarget(), getWalls());
-        Vector2Int[,] flowFieldGrid = FlowFieldGrid.generateFlowField(gridSizeX, gridSizeY, dijkstraGrid);
-
+        DijkstraTile[,] dijkstraGrid = DijkstraGrid.generateDijkstraGrid(gridSize, getTarget(), getWalls());
+        Vector2Int[,] flowFieldGrid = FlowFieldGrid.generateFlowField(gridSize, dijkstraGrid);
 
 
         string s = "DijstraGrid\n";
-        for (int i = 0; i < gridSizeX; i++) {
-            for (int y = 0; y < gridSizeY; y++) {
+        for (int i = 0; i < gridSize.x; i++) {
+            for (int y = 0; y < gridSize.y; y++) {
 
                 if (dijkstraGrid[i, y].getWeight() == int.MaxValue) {
                     s = s + "X";
@@ -30,8 +28,8 @@ public class Run : MonoBehaviour
 
 
         string st = "FlowFieldGrid\n";
-        for (int i = 0; i < gridSizeX; i++) {
-            for (int y = 0; y < gridSizeY; y++) {
+        for (int i = 0; i < gridSize.x; i++) {
+            for (int y = 0; y < gridSize.y; y++) {
 
                     st = st + flowFieldGrid[i, y];
             }
@@ -40,11 +38,8 @@ public class Run : MonoBehaviour
         Debug.Log(st);
     }
 
-
-
-
-    private DijkstraTile getTarget() {
-        return new DijkstraTile(3, 3);
+    private Vector2Int getTarget() {
+        return new Vector2Int(3, 3);
     }
 
     private List<Vector2Int> getWalls() {

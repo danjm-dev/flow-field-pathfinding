@@ -5,20 +5,20 @@ using UnityEngine;
 public static class DijkstraGrid {
 
 
-    public static DijkstraTile[,] generateDijkstraGrid(int gridSizeX, int gridSizeY, DijkstraTile target, List<Vector2Int> walls) {
+    public static DijkstraTile[,] generateDijkstraGrid(Vector2Int gridSize, Vector2Int target, List<Vector2Int> walls) {
 
 
         //Generate an empty grid, set all places as weight -1, which will stand for unvisited
-        DijkstraTile[,] dijkstraGrid = new DijkstraTile[gridSizeX, gridSizeY];
-        for (int x = 0; x < gridSizeX; x++) {
-            for (int y = 0; y < gridSizeY; y++) {
-                dijkstraGrid[x, y] = new DijkstraTile(x, y);
+        DijkstraTile[,] dijkstraGrid = new DijkstraTile[gridSize.x, gridSize.y];
+        for (int x = 0; x < gridSize.x; x++) {
+            for (int y = 0; y < gridSize.y; y++) {
+                dijkstraGrid[x, y] = new DijkstraTile(new Vector2Int(x, y));
             }
         }
 
         //Set all places where obstacles are as being weight MaxValue, which will stand for not able to go here
         foreach (Vector2Int element in walls) {
-            if (element.x < 0 || element.x > gridSizeX-1 || element.y<0 || element.y > gridSizeX-1) {
+            if (element.x < 0 || element.x > gridSize.x-1 || element.y<0 || element.y > gridSize.y-1) {
                 Debug.Log("BAD WALL VECTOR- x: " + element.x + " y: " + element.y);
             }
             else {
@@ -27,7 +27,7 @@ public static class DijkstraGrid {
         }
 
         //flood fill out from the end point
-        DijkstraTile destination = target;
+        DijkstraTile destination = new DijkstraTile(target);
         destination.setWeight(0);
         dijkstraGrid[destination.getVector2d().x, destination.getVector2d().y].setWeight(0);
 
@@ -38,7 +38,7 @@ public static class DijkstraGrid {
         //for each node we need to visit, starting with the pathEnd
         for (int i = 0; i < toVisit.Count; i++) {
 
-            List<DijkstraTile> neighbours = straightNeighboursOf(toVisit[i], gridSizeX, gridSizeY);
+            List<DijkstraTile> neighbours = straightNeighboursOf(toVisit[i], gridSize);
 
             //for each neighbour of this node (only straight line neighbours, not diagonals)
             foreach (DijkstraTile neighbour in neighbours) {
@@ -56,19 +56,19 @@ public static class DijkstraGrid {
 
 
 
-    private static List<DijkstraTile> straightNeighboursOf(DijkstraTile tile, int gridSizeX, int gridSizeY) {
+    private static List<DijkstraTile> straightNeighboursOf(DijkstraTile tile, Vector2Int gridSize) {
         List<DijkstraTile> neighbours = new List<DijkstraTile>();
         if (tile.getVector2d().x > 0) {
-            neighbours.Add(new DijkstraTile(tile.getVector2d().x - 1, tile.getVector2d().y));
+            neighbours.Add(new DijkstraTile(new Vector2Int (tile.getVector2d().x - 1, tile.getVector2d().y)));
         }
         if (tile.getVector2d().y > 0) {
-            neighbours.Add(new DijkstraTile(tile.getVector2d().x, tile.getVector2d().y - 1));
+            neighbours.Add(new DijkstraTile(new Vector2Int (tile.getVector2d().x, tile.getVector2d().y - 1)));
         }
-        if (tile.getVector2d().x < gridSizeX - 1) {
-            neighbours.Add(new DijkstraTile(tile.getVector2d().x + 1, tile.getVector2d().y));
+        if (tile.getVector2d().x < gridSize.x - 1) {
+            neighbours.Add(new DijkstraTile(new Vector2Int (tile.getVector2d().x + 1, tile.getVector2d().y)));
         }
-        if (tile.getVector2d().y < gridSizeY - 1) {
-            neighbours.Add(new DijkstraTile(tile.getVector2d().x, tile.getVector2d().y + 1));
+        if (tile.getVector2d().y < gridSize.y - 1) {
+            neighbours.Add(new DijkstraTile(new Vector2Int (tile.getVector2d().x, tile.getVector2d().y + 1)));
         }
         return neighbours;
     }

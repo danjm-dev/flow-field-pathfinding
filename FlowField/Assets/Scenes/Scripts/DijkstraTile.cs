@@ -7,9 +7,9 @@ public class DijkstraTile {
     private Vector2Int gridPos;
     private int weight;
 
-    public DijkstraTile(int x, int y) {
+    public DijkstraTile(Vector2Int gridPos) {
         this.weight = -1;
-        this.gridPos = new Vector2Int(x, y);
+        this.gridPos = gridPos;
     }
 
     public void setgridPos(Vector2Int vec) {
