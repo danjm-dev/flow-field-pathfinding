@@ -2,42 +2,68 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlowFieldGrid : MonoBehaviour {
-    private int gridSizeX = 5;
-    private int gridSizeY = 10;
-    // Start is called before the first frame update
-    void Start() {
-        DijkstraTile[,] arr = DijkstraGrid.generateDijkstraGrid(gridSizeX, gridSizeY, getTarget(), getWalls());
+public static class FlowFieldGrid {
 
-        string s = "";
-        for (int i = 0; i < gridSizeX; i++) {
+    public static Vector2[,] generateFlowField(int gridSizeX, int gridSizeY, DijkstraTile[,] dijkstraGrid) {
+
+        //Generate an empty grid, set all places as Vector2.zero, which will stand for no good direction
+        Vector2[,] flowField = new Vector2[gridSizeX, gridSizeY];
+        for (int x = 0; x < gridSizeX; x++) {
+            for (int y = 0; y < gridSizeY; y++) {
+                flowField[x, y] = Vector2.zero;//may need to construct dynamic vector
+            }
+        }
+
+        //for each grid square
+        for (int x = 0; x < gridSizeX; x++) {
             for (int y = 0; y < gridSizeY; y++) {
 
-                if (arr[i, y].getWeight() == int.MaxValue) {
-                    s = s + "X";
+                //skip current iteration if index has obsticle
+                if (dijkstraGrid[x,y].getWeight() == int.MaxValue) {
+                    continue;
                 }
-                else {
-                    s = s + arr[i, y].getWeight().ToString();
+
+                Vector2Int pos = new Vector2Int(x, y);
+                List<Vector2Int> neighbours = allNeighboursOf(pos, gridSizeX, gridSizeY);
+
+                //Go through all neighbours and find the one with the lowest distance
+                Vector2Int min = Vector2Int.zero;//this may be incorrect
+                float minDist = 0;
+                for (int i = 0; i < neighbours.Count; i++) {
+                    Vector2Int n = neighbours[i];
+                    float dist = Vector2Int.Distance(dijkstraGrid[n.x, n.y].getVector2d(), dijkstraGrid[pos.x, pos.y].getVector2d());
+
+                    if (dist < minDist) {
+                        min = n;
+                        minDist = dist;
+                    }
+                }
+
+                //If we found a valid neighbour, point in its direction
+                if (min != Vector2Int.zero) {//potential problem
+                    flowField[x,y] = min - pos;
                 }
             }
-            s = s + "\n";
         }
-        Debug.Log(s);
+        return flowField;
     }
 
 
-
-
-    private DijkstraTile getTarget() {
-        return new DijkstraTile(3, 3);
+    private static List<Vector2Int> allNeighboursOf(Vector2Int v, int gridSizeX, int gridSizeY) {
+        List<Vector2Int> res = new List<Vector2Int>();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dy = -1; dy <= 1; dy++) {
+                int x = v.x + dx;
+                int y = v.y + dy;
+                //All neighbours on the grid that aren't ourself
+                if (x >= 0 && y >= 0 && x < gridSizeX && y < gridSizeY && !(dx == 0 && dy == 0)) {
+                    res.Add(new Vector2Int(x, y));
+                }
+            }
+        }
+        return res;
     }
 
-    private List<Vector2Int> getWalls() {
-        List<Vector2Int> walls = new List<Vector2Int>();
-        walls.Add(new Vector2Int(0, 2));
-        walls.Add(new Vector2Int(4, 3));
-        return walls;
-    }
 
 
 }
