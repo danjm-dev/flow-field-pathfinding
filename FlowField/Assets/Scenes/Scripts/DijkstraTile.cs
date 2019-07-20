@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FlowFieldTile {
+public class DijkstraTile {
 
     private Vector2Int gridPos;
     private int weight;
 
-    public FlowFieldTile(int x, int y) {
+    public DijkstraTile(int x, int y) {
         this.weight = -1;
         this.gridPos = new Vector2Int(x, y);
     }
