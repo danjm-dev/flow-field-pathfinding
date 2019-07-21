@@ -12,7 +12,6 @@ public class WorldGrid : MonoBehaviour {
 
     DijkstraTile[,] NodeArray;//The array of nodes that the A Star algorithm uses.
 
-
     float fNodeDiameter;//Twice the amount of the radius (Set in the start function)
     int iGridSizeX, iGridSizeY;//Size of the Grid in Array units.
 
@@ -23,6 +22,24 @@ public class WorldGrid : MonoBehaviour {
         iGridSizeX = Mathf.RoundToInt(vGridWorldSize.x / fNodeDiameter);//Divide the grids world co-ordinates by the diameter to get the size of the graph in array units.
         iGridSizeY = Mathf.RoundToInt(vGridWorldSize.y / fNodeDiameter);//Divide the grids world co-ordinates by the diameter to get the size of the graph in array units.
         CreateGrid();//Draw the grid
+        DijkstraTile[,] dijtraGrid = DijkstraGrid.generateDijkstraGrid(this.NodeArray, new Vector2Int(iGridSizeX, iGridSizeY), NodeFromWorldPoint(StartPosition.position));
+
+
+
+        string s = "worldgrid\n";
+        for (int x = 0; x < iGridSizeX; x++) {
+            for (int y = 0; y < iGridSizeY; y++) {
+                if (dijtraGrid[x, y].getWeight() == int.MaxValue) {
+                    s = s + "X ";
+                }
+                else {
+                    s = s + dijtraGrid[x, y].getWeight().ToString()+" ";
+                }
+            }
+            s = s + "\n";
+        }
+        Debug.Log(s);
+
     }
 
     void CreateGrid() {
@@ -33,19 +50,30 @@ public class WorldGrid : MonoBehaviour {
             for (int y = 0; y < iGridSizeY; y++)//Loop through the array of nodes
             {
                 Vector3 worldPoint = bottomLeft + Vector3.right * (x * fNodeDiameter + fNodeRadius) + Vector3.forward * (y * fNodeDiameter + fNodeRadius);//Get the world co ordinates of the bottom left of the graph
-                bool wall = true;//Make the node a wall
+                DijkstraTile tile = new DijkstraTile(new Vector2Int(x, y), worldPoint);
 
-                //If the node is not being obstructed
-                //Quick collision check against the current node and anything in the world at its position. If it is colliding with an object with a WallMask,
-                //The if statement will return false.
                 if (Physics.CheckSphere(worldPoint, fNodeRadius, WallMask)) {
-                    wall = false;//Object is not a wall
+                    tile.setWeight(int.MaxValue);
                 }
-
-                NodeArray[x, y] = new DijkstraTile(new Vector2Int(x,y), worldPoint, wall);//Create a new node in the array.
+                NodeArray[x, y] = tile;//Create a new node in the array.
             }
         }
     }
+
+    //Gets the closest node to the given world position.
+    public DijkstraTile NodeFromWorldPoint(Vector3 a_vWorldPos) {
+        float ixPos = ((a_vWorldPos.x + vGridWorldSize.x / 2) / vGridWorldSize.x);
+        float iyPos = ((a_vWorldPos.z + vGridWorldSize.y / 2) / vGridWorldSize.y);
+
+        ixPos = Mathf.Clamp01(ixPos);
+        iyPos = Mathf.Clamp01(iyPos);
+
+        int ix = Mathf.RoundToInt((iGridSizeX - 1) * ixPos);
+        int iy = Mathf.RoundToInt((iGridSizeY - 1) * iyPos);
+
+        return NodeArray[ix, iy];
+    }
+
 
     //Function that draws the wireframe
     private void OnDrawGizmos() {
@@ -56,14 +84,13 @@ public class WorldGrid : MonoBehaviour {
         {
             foreach (DijkstraTile n in NodeArray)//Loop through every node in the grid
             {
-                if (n.getIsWall())//If the current node is a wall node
+                if (n.getWeight() == int.MaxValue)//If the current node is a wall node
                 {
-                    Gizmos.color = Color.blue;//Set the color of the node
+                    Gizmos.color = Color.white;//Set the color of the node
                 }
                 else {
-                    Gizmos.color = Color.red;//Set the color of the node
+                    Gizmos.color = Color.yellow;//Set the color of the node
                 }
-
                 Gizmos.DrawCube(n.getWorldPosition(), Vector3.one * (fNodeDiameter - fDistanceBetweenNodes));//Draw the node at the position of the node.
             }
         }

@@ -6,12 +6,10 @@ public class DijkstraTile {
 
     private Vector2Int gridPos;
     private int weight;
-    private bool isWall;
     Vector3 worldPosition;
 
-    public DijkstraTile(Vector2Int gridPos, Vector3 worldPosition, bool isWall) {
-        //this.weight = weight;
-        this.isWall = isWall;
+    public DijkstraTile(Vector2Int gridPos, Vector3 worldPosition) {
+        this.weight = -1;
         this.gridPos = gridPos;
         this.worldPosition = worldPosition;
     }
@@ -30,10 +28,6 @@ public class DijkstraTile {
 
     public int getWeight() {
         return this.weight;
-    }
-
-    public bool getIsWall() {
-        return this.isWall;
     }
 
     public Vector3 getWorldPosition() {
