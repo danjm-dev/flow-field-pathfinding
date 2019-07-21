@@ -23,10 +23,10 @@ public class WorldGrid : MonoBehaviour {
         iGridSizeY = Mathf.RoundToInt(vGridWorldSize.y / fNodeDiameter);//Divide the grids world co-ordinates by the diameter to get the size of the graph in array units.
         CreateGrid();//Draw the grid
         DijkstraTile[,] dijtraGrid = DijkstraGrid.generateDijkstraGrid(this.NodeArray, new Vector2Int(iGridSizeX, iGridSizeY), NodeFromWorldPoint(StartPosition.position));
+        Vector2Int[,] flowFieldGrid = FlowFieldGrid.generateFlowField(new Vector2Int(iGridSizeX, iGridSizeY), dijtraGrid);
 
 
-
-        string s = "worldgrid\n";
+        string s = "dijstrasgrid\n";
         for (int x = 0; x < iGridSizeX; x++) {
             for (int y = 0; y < iGridSizeY; y++) {
                 if (dijtraGrid[x, y].getWeight() == int.MaxValue) {
@@ -39,6 +39,15 @@ public class WorldGrid : MonoBehaviour {
             s = s + "\n";
         }
         Debug.Log(s);
+
+        string s1 = "flowgrid\n";
+        for (int x = 0; x < iGridSizeX; x++) {
+            for (int y = 0; y < iGridSizeY; y++) {
+                s1=s1+flowFieldGrid[x, y];
+            }
+            s1 = s1 + "\n";
+        }
+        Debug.Log(s1);
 
     }
 
