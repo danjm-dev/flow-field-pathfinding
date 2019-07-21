@@ -146,9 +146,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 353563225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 51bf9a34a37b30a419b561165142a20f, type: 3}
+  m_Script: {fileID: 11500000, guid: fb3511b15aa598543be23ad796517d19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gridSize: {x: 5, y: 10}
+  target: {x: 3, y: 3}
+  walls:
+  - {x: 0, y: 2}
+  - {x: 4, y: 3}
 --- !u!4 &353563227
 Transform:
   m_ObjectHideFlags: 0
