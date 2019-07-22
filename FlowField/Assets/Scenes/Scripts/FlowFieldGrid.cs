@@ -4,22 +4,14 @@ using UnityEngine;
 
 public static class FlowFieldGrid {
 
-    public static Vector2Int[,] generateFlowField(Vector2Int gridSize, DijkstraTile[,] dijkstraGrid) {
-
-        //Generate an empty grid, set all places as Vector2.zero, which will stand for no good direction
-        Vector2Int[,] flowField = new Vector2Int[gridSize.x, gridSize.y];
-        for (int x = 0; x < gridSize.x; x++) {
-            for (int y = 0; y < gridSize.y; y++) {
-                flowField[x, y] = Vector2Int.zero;//may need to construct dynamic vector
-            }
-        }
+    public static DijkstraTile[,] generateFlowField(Vector2Int gridSize, DijkstraTile[,] grid) {
 
         //for each grid square
         for (int x = 0; x < gridSize.x; x++) {
             for (int y = 0; y < gridSize.y; y++) {
 
                 //skip current iteration if index has obsticle
-                if (dijkstraGrid[x, y].getWeight() != int.MaxValue) {
+                if (grid[x, y].getWeight() != int.MaxValue) {
 
                     Vector2Int pos = new Vector2Int(x, y);
                     List<Vector2Int> neighbours = allNeighboursOf(pos, gridSize);
@@ -30,7 +22,7 @@ public static class FlowFieldGrid {
                     int minDist = 0;
                     for (int i = 0; i < neighbours.Count; i++) {
                         Vector2Int n = neighbours[i];
-                        int dist = dijkstraGrid[n.x, n.y].getWeight() - dijkstraGrid[pos.x, pos.y].getWeight();
+                        int dist = grid[n.x, n.y].getWeight() - grid[pos.x, pos.y].getWeight();
                         if (dist < minDist) {
                             min = n;
                             minNotNull = true;
@@ -40,14 +32,13 @@ public static class FlowFieldGrid {
 
                     //If we found a valid neighbour, point in its direction
                     if (minNotNull) {//potential problem
-                        flowField[x, y] = min - pos;
+                        grid[x, y].setFlowFieldVector(min - pos);
                     }
                 }
             }
         }
-        return flowField;
+        return grid;
     }
-
 
     private static List<Vector2Int> allNeighboursOf(Vector2Int v, Vector2Int gridSize) {
         List<Vector2Int> res = new List<Vector2Int>();

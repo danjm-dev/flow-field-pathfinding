@@ -7,6 +7,7 @@ public class DijkstraTile {
     private Vector2Int gridPos;
     private int weight;
     Vector3 worldPosition;
+    Vector2Int FlowFieldVector;
 
     public DijkstraTile(Vector2Int gridPos, Vector3 worldPosition) {
         this.weight = -1;
@@ -32,5 +33,13 @@ public class DijkstraTile {
 
     public Vector3 getWorldPosition() {
         return this.worldPosition;
+    }
+
+    public void setFlowFieldVector(Vector2Int v) {
+        this.FlowFieldVector = v;
+    }
+
+    public Vector2Int getFlowFieldVector() {
+        return FlowFieldVector;
     }
 }
