@@ -25,6 +25,15 @@ public class WorldGrid : MonoBehaviour {
         DijkstraTile[,] dijtraGrid = DijkstraGrid.generateDijkstraGrid(this.NodeArray, new Vector2Int(iGridSizeX, iGridSizeY), NodeFromWorldPoint(StartPosition.position));
         DijkstraTile[,] flowFieldGrid = FlowFieldGrid.generateFlowField(new Vector2Int(iGridSizeX, iGridSizeY), dijtraGrid);
 
+        string s1 = "flowgrid\n";
+        for (int x = 0; x < iGridSizeX; x++) {
+            for (int y = 0; y < iGridSizeY; y++) {
+                s1 = s1 + flowFieldGrid[x, y].getFlowFieldVector();
+            }
+            s1 = s1 + "\n";
+        }
+        Debug.Log(s1);
+
     }
 
     void CreateGrid() {

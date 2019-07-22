@@ -14,7 +14,7 @@ public static class FlowFieldGrid {
                 if (grid[x, y].getWeight() != int.MaxValue) {
 
                     Vector2Int pos = new Vector2Int(x, y);
-                    List<Vector2Int> neighbours = allNeighboursOf(pos, gridSize);
+                    List<Vector2Int> neighbours = allNeighboursOf(pos, gridSize, grid);
 
                     //Go through all neighbours and find the one with the lowest distance
                     Vector2Int min = Vector2Int.zero;//this may be incorrect
@@ -40,20 +40,55 @@ public static class FlowFieldGrid {
         return grid;
     }
 
-    private static List<Vector2Int> allNeighboursOf(Vector2Int v, Vector2Int gridSize) {
+    private static bool isValid(int x, int y, Vector2Int gridSize, DijkstraTile[,] grid) {
+        return x >= 0 && y >= 0 && x < gridSize.x && y < gridSize.y && grid[x,y].getWeight() != int.MaxValue;
+    }
+    private static List<Vector2Int> allNeighboursOf(Vector2Int v, Vector2Int gridSize, DijkstraTile[,] grid) {
         List<Vector2Int> res = new List<Vector2Int>();
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-                int x = v.x + dx;
-                int y = v.y + dy;
-                //All neighbours on the grid that aren't ourself
-                if (x >= 0 && y >= 0 && x < gridSize.x && y < gridSize.y && !(dx == 0 && dy == 0)) {
-                    res.Add(new Vector2Int(x, y));
-                }
+        int x = v.x;
+        int y = v.y;
+        bool up = isValid(x, y - 1, gridSize, grid), down = isValid(x, y + 1, gridSize, grid), left = isValid(x - 1, y, gridSize, grid), right = isValid(x + 1, y, gridSize, grid);
+
+        //We test each straight direction, then subtest the next one clockwise
+
+        if (left) {
+            res.Add(new Vector2Int(x - 1, y));
+
+            //left up
+            if (up && isValid(x - 1, y - 1, gridSize, grid)) {
+                res.Add(new Vector2Int(x - 1, y - 1));
+            }
+        }
+
+        if (up) {
+            res.Add(new Vector2Int(x, y - 1));
+
+            //up right
+            if (right && isValid(x + 1, y - 1, gridSize, grid)) {
+                res.Add(new Vector2Int(x + 1, y - 1));
+            }
+        }
+
+        if (right) {
+            res.Add(new Vector2Int(x + 1, y));
+
+            //right down
+            if (down && isValid(x + 1, y + 1, gridSize, grid)) {
+                res.Add(new Vector2Int(x + 1, y + 1));
+            }
+        }
+
+        if (down) {
+            res.Add(new Vector2Int(x, y + 1));
+
+            //down left
+            if (left && isValid(x - 1, y + 1, gridSize, grid)) {
+                res.Add(new Vector2Int(x - 1, y + 1));
             }
         }
         return res;
     }
+
 
 
 

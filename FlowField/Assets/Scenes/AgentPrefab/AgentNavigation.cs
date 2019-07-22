@@ -17,8 +17,11 @@ public class AgentNavigation : MonoBehaviour
     void Update()
     {
         Vector2Int vec = worldGrid.NodeFromWorldPoint(agentPosition.position).getFlowFieldVector();
-        Debug.Log(vec.x + "," + vec.y);
-        rb.AddForce(force * (vec.x * Time.deltaTime), 0, force * (vec.y * Time.deltaTime));
+        Vector3 moveDir = new Vector3(vec.x, 0, vec.y);
+        //Debug.Log(vec.x + "," + vec.y);
+        //rb.AddForce(moveDir * force * Time.deltaTime);
         
+        transform.position += moveDir * force * Time.deltaTime;
+
     }
 }
