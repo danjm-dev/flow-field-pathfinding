@@ -8,19 +8,29 @@ public class AgentNavigation : MonoBehaviour
     public Transform agentPosition;
     public Rigidbody rb;
     public float force =1.0f;
-
+    private Vector3 backupMovement = Vector3.zero;
     private void Start() {
         rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        Vector2Int vec = worldGrid.NodeFromWorldPoint(agentPosition.position).getFlowFieldVector();
-        Vector3 moveDir = new Vector3(vec.x, 0, vec.y);
-        //Debug.Log(vec.x + "," + vec.y);
-        //rb.AddForce(moveDir * force * Time.deltaTime);
         
+        Vector2Int vec = worldGrid.NodeFromWorldPoint(agentPosition.position).getFlowFieldVector();
+        Vector3 moveDir = new Vector3(vec.x, 0, vec.y).normalized;
+
+        //if (moveDir.Equals(Vector3.zero)) {
+        //    if (this.backupMovement.Equals(Vector3.zero)) {
+        //        Debug.Log("Agent started on invalid tile");
+        //    }
+        //    rb.AddForce(-this.backupMovement * Time.deltaTime * force, ForceMode.Force);
+        //}
+        //else {
+        //    this.backupMovement = moveDir;
+        //    rb.AddForce(moveDir * Time.deltaTime * force, ForceMode.Force);
+        //}
+
         transform.position += moveDir * force * Time.deltaTime;
 
     }

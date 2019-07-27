@@ -109,7 +109,7 @@ MonoBehaviour:
   worldGrid: {fileID: 0}
   agentPosition: {fileID: 7643125734911056327}
   rb: {fileID: 1081461767}
-  force: 150
+  force: 1
 --- !u!54 &1081461767
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -119,8 +119,8 @@ Rigidbody:
   m_GameObject: {fileID: 7895656420259041077}
   serializedVersion: 2
   m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
+  m_Drag: 1
+  m_AngularDrag: 1
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
