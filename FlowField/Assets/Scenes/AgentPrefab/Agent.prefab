@@ -109,7 +109,7 @@ MonoBehaviour:
   worldGrid: {fileID: 0}
   agentPosition: {fileID: 7643125734911056327}
   rb: {fileID: 1081461767}
-  force: 1
+  force: 1500
 --- !u!54 &1081461767
 Rigidbody:
   m_ObjectHideFlags: 0
