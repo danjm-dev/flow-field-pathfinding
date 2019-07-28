@@ -70,12 +70,12 @@ public class WorldGrid : MonoBehaviour {
             {
                 if (n.getWeight() == int.MaxValue)//If the current node is a wall node
                 {
-                    Gizmos.color = Color.red;//Set the color of the node
+                    Gizmos.color = Color.magenta;//Set the color of the node
                 }
                 else {
                     Gizmos.color = Color.blue;//Set the color of the node
                 }
-                Gizmos.DrawCube(n.getWorldPosition(), Vector3.one * (fNodeDiameter - fDistanceBetweenNodes));//Draw the node at the position of the node.
+                Gizmos.DrawCube(n.getWorldPosition(), new Vector3(1,0,1) * (fNodeDiameter - fDistanceBetweenNodes));//Draw the node at the position of the node.
             }
         }
     }
