@@ -3,7 +3,7 @@
 
 **Pathfinding Algorithms - Flow Field Pathfinding**
 
-![Video Demonstration](flowFieldDemo.mp4)
+![Video Demonstration](https://youtu.be/7r3ZhVH5DXM)
 
 * **Background**
 
