@@ -1,7 +1,7 @@
 # Unity flowfield pathfinding implementation
 **Developed for assignment 1 of COMP313 at Victoria University of Wellington**
 
-![Video demonstration/explanation of implementation](https://youtu.be/7r3ZhVH5DXM)
+Video demonstration/explanation: https://youtu.be/7r3ZhVH5DXM
 
 * **Background**
 
